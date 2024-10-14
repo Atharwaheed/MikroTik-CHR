@@ -1,0 +1,26 @@
+  GNU nano 7.2                                                                                         RADIUS.yml                                                                                                  ---
+- name: Configure RADIUS client
+  hosts: localhost
+  become: yes  # Elevate privileges to sudo/root if needed
+  tasks:
+    - name: Install FreeRADIUS (if not already installed)
+      apt:
+        name: freeradius
+        state: present
+        update_cache: yes
+
+    - name: Add RADIUS client configuration
+      blockinfile:
+        path: /etc/freeradius/3.0/clients.conf
+        block: |
+          client new_radius_client {
+            ipaddr = 35.227.71.209
+            secret = testing123
+            shortname = my_radius_client
+            nastype = other
+          }
+
+    - name: Restart FreeRADIUS service
+      service:
+        name: freeradius
+        state: restarted
